@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guru Hotel - Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🏨</span>
+                    <h1>Guru Hotel</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+                    <button class="nav-btn nav-btn-highlight" data-section="customer-menu">🍽️ Order Food</button>
+                    <button class="nav-btn" data-section="menu">Menu Management</button>
+                    <button class="nav-btn" data-section="money">Money Counter</button>
+                </nav>
+                <div class="cart-icon-container" id="cart-icon-container" style="display: none;">
+                    <button class="cart-icon-btn" onclick="toggleCart()" id="cart-btn">
+                        🛒 <span class="cart-count" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <h2 class="section-title">Dashboard</h2>
+                
+                <!-- Customer Ordering Banner -->
+                <div class="customer-banner">
+                    <div class="customer-banner-content">
+                        <div class="customer-banner-text">
+                            <h2>🍽️ Order Now!</h2>
+                            <p>Browse our delicious menu and place your order online</p>
+                        </div>
+                        <div class="customer-banner-actions">
+                            <button class="btn btn-success btn-large" onclick="switchSection('customer-menu')">
+                                View Menu & Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <h3 id="total-menu-items">0</h3>
+                            <p>Menu Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3 id="total-revenue">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3 id="cash-on-hand">₹0</h3>
+                            <p>Cash on Hand</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3 id="total-transactions">0</h3>
+                            <p>Transactions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="switchSection('customer-menu')">
+                            🍽️ View Food Menu
+                        </button>
+                        <button class="action-btn" onclick="switchSection('menu')">
+                            ➕ Add Menu Item
+                        </button>
+                        <button class="action-btn" onclick="switchSection('money')">
+                            💰 Record Transaction
+                        </button>
+                        <button class="action-btn" onclick="openOrdersModal()">
+                            📋 View Orders
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Menu Management Section -->
+            <section id="menu" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Menu Management</h2>
+                    <button class="btn btn-primary" onclick="openMenuModal()">
+                        ➕ Add New Item
+                    </button>
+                </div>
+
+                <div class="filter-bar">
+                    <button class="filter-btn active" data-category="all">All</button>
+                    <button class="filter-btn" data-category="food">Food</button>
+                    <button class="filter-btn" data-category="beverage">Beverage</button>
+                    <button class="filter-btn" data-category="dessert">Dessert</button>
+                </div>
+
+                <div class="menu-grid" id="menu-grid">
+                    <!-- Menu items will be dynamically added here -->
+                </div>
+            </section>
+
+            <!-- Money Counter Section -->
+            <section id="money" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Money Counter</h2>
+                    <button class="btn btn-primary" onclick="openTransactionModal()">
+                        ➕ Add Transaction
+                    </button>
+                </div>
+
+                <div class="money-overview">
+                    <div class="money-card">
+                        <h3>Cash on Hand</h3>
+                        <p class="money-amount" id="money-display">₹0.00</p>
+                    </div>
+                    <div class="money-card positive">
+                        <h3>Total Income</h3>
+                        <p class="money-amount" id="total-income">₹0.00</p>
+                    </div>
+                    <div class="money-card negative">
+                        <h3>Total Expenses</h3>
+                        <p class="money-amount" id="total-expenses">₹0.00</p>
+                    </div>
+                </div>
+
+                <div class="transaction-controls">
+                    <h3>Manual Cash Count</h3>
+                    <div class="cash-input-group">
+                        <input type="number" id="manual-cash" class="cash-input" placeholder="Enter amount" step="0.01">
+                        <button class="btn btn-success" onclick="updateManualCash()">Update Cash</button>
+                    </div>
+                </div>
+
+                <div class="transactions-container">
+                    <h3>Transaction History</h3>
+                    <div class="transaction-filters">
+                        <button class="filter-btn active" data-type="all">All</button>
+                        <button class="filter-btn" data-type="income">Income</button>
+                        <button class="filter-btn" data-type="expense">Expense</button>
+                    </div>
+                    <div class="transactions-list" id="transactions-list">
+                        <!-- Transactions will be dynamically added here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customer Menu Section -->
+            <section id="customer-menu" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Our Food Menu</h2>
+                    <button class="btn btn-primary" onclick="toggleCart()">
+                        🛒 View Cart (<span id="cart-count-header">0</span>)
+                    </button>
+                </div>
+
+                <div class="customer-filter-bar">
+                    <button class="filter-btn active" data-category="all">All Items</button>
+                    <button class="filter-btn" data-category="food">🍽️ Food</button>
+                    <button class="filter-btn" data-category="beverage">🥤 Beverages</button>
+                    <button class="filter-btn" data-category="dessert">🍰 Desserts</button>
+                </div>
+
+                <div class="customer-menu-grid" id="customer-menu-grid">
+                    <!-- Customer menu items will be dynamically added here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Order</h2>
+            <button class="cart-close" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-content" id="cart-content">
+            <div class="cart-empty" id="cart-empty">
+                <p>Your cart is empty</p>
+                <p class="cart-empty-text">Add items from the menu to get started!</p>
+            </div>
+            <div class="cart-items" id="cart-items" style="display: none;">
+                <!-- Cart items will be added here -->
+            </div>
+        </div>
+        <div class="cart-footer" id="cart-footer" style="display: none;">
+            <div class="cart-total">
+                <div class="cart-total-row">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">₹0.00</span>
+                </div>
+                <div class="cart-total-row">
+                    <span>Tax (5%):</span>
+                    <span id="cart-tax">₹0.00</span>
+                </div>
+                <div class="cart-total-row cart-total-final">
+                    <span>Total:</span>
+                    <span id="cart-total">₹0.00</span>
+                </div>
+            </div>
+            <div class="customer-info">
+                <div class="form-group">
+                    <label for="customer-name">Your Name</label>
+                    <input type="text" id="customer-name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customer-table">Table Number</label>
+                    <input type="text" id="customer-table" placeholder="Table # (optional)">
+                </div>
+            </div>
+            <button class="btn btn-success btn-block" onclick="placeOrder()">
+                Place Order
+            </button>
+        </div>
+    </div>
+
+    <!-- Orders Section Modal -->
+    <div id="orders-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order History</h2>
+                <button class="modal-close" onclick="closeOrdersModal()">&times;</button>
+            </div>
+            <div class="orders-list-container" id="orders-list-container">
+                <!-- Orders will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Item Modal -->
+    <div id="menu-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="menu-modal-title">Add Menu Item</h2>
+                <button class="modal-close" onclick="closeMenuModal()">&times;</button>
+            </div>
+            <form id="menu-form" class="modal-form">
+                <div class="form-group">
+                    <label for="item-name">Item Name</label>
+                    <input type="text" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-category">Category</label>
+                    <select id="item-category" required>
+                        <option value="food">Food</option>
+                        <option value="beverage">Beverage</option>
+                        <option value="dessert">Dessert</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-price">Price (₹)</label>
+                    <input type="number" id="item-price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-description">Description</label>
+                    <textarea id="item-description" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeMenuModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div id="transaction-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Transaction</h2>
+                <button class="modal-close" onclick="closeTransactionModal()">&times;</button>
+            </div>
+            <form id="transaction-form" class="modal-form">
+                <div class="form-group">
+                    <label for="transaction-type">Type</label>
+                    <select id="transaction-type" required>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-amount">Amount (₹)</label>
+                    <input type="number" id="transaction-amount" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-description">Description</label>
+                    <input type="text" id="transaction-description" required>
+                </div>
+                <div class="form-group">
+                    <label for="transaction-date">Date</label>
+                    <input type="datetime-local" id="transaction-date" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTransactionModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
